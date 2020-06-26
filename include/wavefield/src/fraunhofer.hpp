@@ -28,16 +28,16 @@ void fraunhofer_impl(
           * (reciprocal.range(1).max() - reciprocal.range(1).min())
           / real.range(0).N() / wavelength;
 
-    auto coef = std::exp(1.0i * wavelength * distance)
-                / (1.0i * wavelength * distance)
-                * real.range(0).cell_size()
-                * real.range(1).cell_size()
-                / (double)real.range(0).N();
+    //auto coef = std::exp(1.0i * wavelength * distance)
+    /// (1.0i * wavelength * distance)
+    //* real.range(0).cell_size()
+    //* real.range(1).cell_size()
+    /// (double)real.range(0).N();
 
-    std::for_each(std::execution::par_unseq,
-        reciprocal.begin(), reciprocal.end(), [&coef](auto& f) {
-            f *= coef;
-        });
+    //std::for_each(std::execution::par_unseq,
+    //reciprocal.begin(), reciprocal.end(), [&coef](auto& f) {
+    //f *= coef;
+    //});
 }
 
 template <class grid_vector, class length_t>

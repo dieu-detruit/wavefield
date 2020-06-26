@@ -27,8 +27,9 @@ void fresnel_fft_impl(
           * (reciprocal.range(1).max() - reciprocal.range(1).min())
           / real.range(0).N() / wavelength;
 
+    auto k = 2.0 * M_PI / wavelength;
     for (auto [xi, eta] : real.lines()) {
-        real.at(xi, eta) *= std::polar(1.0, k * (distance + (xi * xi + eta * eta) / (2.0 * distance))) / (1.0i * wavelength * distance);
+        real.at(xi, eta) *= std::polar(1.0, k * (distance + (xi * xi + eta * eta) / (2.0 * distance)));
     }
 
     fftw_execute(plan);
@@ -40,8 +41,8 @@ void fresnel_fft_impl(
                 * real.range(1).cell_size()
                 / (double)real.range(0).N();
 
-    for (auto [x, y] : detector.lines()) {
-        reciprocal.at(x, y) *= coef * std::polar(1.0, distance + (x * x + y * y) / (2.0 * distance));
+    for (auto [x, y] : reciprocal.lines()) {
+        reciprocal.at(x, y) *= coef * std::polar(1.0, k * (distance + (x * x + y * y) / (2.0 * distance)));
     }
 }
 
@@ -62,7 +63,7 @@ public:
         length_t wavelength) : real(real), reciprocal(reciprocal), wavelength(wavelength)
     {
         plan = fftw_plan_dft_2d(real.range(0).N(), real.range(1).N(),
-            reinterpret_cast<fftw_complex*>(real.data()), reinterpret_cast<fftw_complex*>(reciprocal.data()), FFTW_BACKWARD, FFTW_MEASURE);
+            reinterpret_cast<fftw_complex*>(real.data()), reinterpret_cast<fftw_complex*>(reciprocal.data()), FFTW_FORWARD, FFTW_MEASURE);
     }
 
     void propagate()
@@ -82,7 +83,7 @@ void propagate(fresnel_fft_diffraction_tag&&,
     length_t wavelength)
 {
     fftw_plan plan = fftw_plan_dft_2d(real.range(0).N(), real.range(1).N(),
-        reinterpret_cast<fftw_complex*>(real.data()), reinterpret_cast<fftw_complex*>(reciprocal.data()), FFTW_BACKWARD, FFTW_ESTIMATE);
+        reinterpret_cast<fftw_complex*>(real.data()), reinterpret_cast<fftw_complex*>(reciprocal.data()), FFTW_FORWARD, FFTW_ESTIMATE);
 
     fresnel_fft_impl(real, reciprocal, wavelength, plan);
     fftw_destroy_plan(plan);

@@ -17,7 +17,8 @@ find_library (
 find_package(TBB REQUIRED)
 
 set(WAVEFIELD_INCLUDE_DIRS
-        ${CMAKE_CURRENT_LIST_DIR}/include ${CMAKE_CURRENT_LIST_DIR}/external/grid/include
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/external/grid/include
         ${FFTW3_INCLUDE_DIRS}
         )
 
