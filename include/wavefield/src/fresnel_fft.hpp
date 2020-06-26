@@ -78,7 +78,7 @@ public:
 };
 
 template <class grid_vector, class length_t>
-void propagate(fresnel_fft_diffraction_tag&&,
+void propagate(fresnel_fft_diffraction_tag,
     grid_vector& real, grid_vector& reciprocal,
     length_t wavelength)
 {

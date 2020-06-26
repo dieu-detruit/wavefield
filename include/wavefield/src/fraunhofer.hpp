@@ -73,7 +73,7 @@ public:
 };
 
 template <class grid_vector, class length_t>
-void propagate(fraunhofer_diffraction_tag&&,
+void propagate(fraunhofer_diffraction_tag,
     grid_vector& real, grid_vector& reciprocal,
     length_t wavelength)
 {

@@ -9,24 +9,24 @@ struct diffraction_tag {
 // Fraunhofer
 struct fraunhofer_diffraction_tag : diffraction_tag {
 };
-constexpr fraunhofer_diffraction_tag fraunhofer;
+inline constexpr fraunhofer_diffraction_tag fraunhofer;
 
 // Fresnel
 struct fresnel_fft_diffraction_tag : diffraction_tag {
 };
-constexpr fresnel_fft_diffraction_tag fresnel_fft;
+inline constexpr fresnel_fft_diffraction_tag fresnel_fft;
 
 struct fresnel_convolution_diffraction_tag : diffraction_tag {
 };
-constexpr fresnel_convolution_diffraction_tag fresnel_convolution;
+inline constexpr fresnel_convolution_diffraction_tag fresnel_convolution;
 
 struct fresnel_scaled_fft_diffraction_tag : diffraction_tag {
 };
-constexpr fresnel_scaled_fft_diffraction_tag fresnel_scaled_fft;
+inline constexpr fresnel_scaled_fft_diffraction_tag fresnel_scaled_fft;
 
 // Rayleigh-Sommerfeld
 struct angular_spectrum_diffraction_tag : diffraction_tag {
 };
-constexpr angular_spectrum_diffraction_tag angular_spectrum_method;
+inline constexpr angular_spectrum_diffraction_tag angular_spectrum_method;
 
 }  // namespace wavefield
