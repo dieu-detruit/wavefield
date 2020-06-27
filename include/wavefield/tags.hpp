@@ -27,6 +27,6 @@ inline constexpr fresnel_scaled_fft_diffraction_tag fresnel_scaled_fft;
 // Rayleigh-Sommerfeld
 struct angular_spectrum_diffraction_tag : diffraction_tag {
 };
-inline constexpr angular_spectrum_diffraction_tag angular_spectrum_method;
+inline constexpr angular_spectrum_diffraction_tag angular;
 
 }  // namespace wavefield
