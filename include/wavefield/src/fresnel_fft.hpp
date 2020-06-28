@@ -23,7 +23,7 @@ void fresnel_fft_impl(
     length_t wavelength, fftw_plan& plan)
 {
     length_t distance
-        = 2.0 * (real.range(0).max - real.range(0).min)
+        = (real.range(0).max - real.range(0).min)
           * (reciprocal.range(1).max - reciprocal.range(1).min)
           / real.range(0).N / wavelength;
 

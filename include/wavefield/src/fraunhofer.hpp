@@ -4,6 +4,7 @@
 #include <cmath>
 #include <complex>
 #include <execution>
+#include <numbers>
 
 #include <fftw3.h>
 
@@ -22,14 +23,12 @@ void fraunhofer_impl(
     grid_vector& real, grid_vector& reciprocal,
     length_t wavelength)
 {
-    Grid::fftshift(reciprocal);
     length_t distance
-        = 2.0 * (real.range(0).max - real.range(0).min)
+        = (real.range(0).max - real.range(0).min)
           * (reciprocal.range(1).max - reciprocal.range(1).min)
           / real.range(0).N / wavelength;
 
-    auto coef = std::exp(1.0i * wavelength * distance)
-                / (1.0i * wavelength * distance)
+    auto coef = -1.0i * std::polar(1.0 / (wavelength * distance), 2.0 * std::numbers::pi * distance / wavelength)
                 * real.range(0).cell_size
                 * real.range(1).cell_size
                 / (double)real.range(0).N;
