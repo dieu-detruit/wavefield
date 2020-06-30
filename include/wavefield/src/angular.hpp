@@ -4,7 +4,6 @@
 #include <cmath>
 #include <complex>
 #include <execution>
-#include <iostream>
 #include <numbers>
 
 #include <fftw3.h>
@@ -43,8 +42,9 @@ public:
         real_grid& reciprocal,
         length_t wavelength) : real(real),
                                real_expanded{real.range(0) * 2, real.range(1) * 2},
-                               real_fft{{-2.0 / real.range(0).length(), 2.0 / real.range(0).length(), 2 * real.range(0).N},
-                                   {-2.0 / real.range(1).length(), 2.0 / real.range(1).length(), 2 * real.range(0).N}},
+                               real_fft{{-1.0 / real.range(0).cell_size, 1.0 / real.range(0).cell_size, 2 * real.range(0).N},
+
+                                   {-1.0 / real.range(1).cell_size, 1.0 / real.range(1).cell_size, 2 * real.range(1).N}},
                                reciprocal_expanded{reciprocal.range(0) * 2, reciprocal.range(1) * 2},
                                reciprocal(reciprocal),
                                wavelength(wavelength)
@@ -56,20 +56,18 @@ public:
             reinterpret_cast<fftw_complex*>(real_fft.data()), reinterpret_cast<fftw_complex*>(reciprocal_expanded.data()), FFTW_BACKWARD, FFTW_MEASURE);
     }
 
-    void propagate()
+    void
+    propagate()
     {
-        std::cout << "expand real" << std::endl;
-
+        real_expanded.fill(0.0 * *real.begin());
         for (auto [x, y, r] : Grid::zip(real.lines(), real)) {
             real_expanded.at(x, y) = r;
         }
-        std::cout << "fft(real_expanded)" << std::endl;
 
         // 実空間波面をフーリエ変換
         fftw_execute(plan_fft);
-        Grid::fftshift(real_fft);
 
-        std::cout << "convolve" << std::endl;
+        Grid::fftshift(real_fft);
 
         // 畳み込み(フーリエ変換先)
         {
@@ -79,16 +77,20 @@ public:
                   / (real.range(0).N * wavelength);
             auto coef = 1.0 / (real.range(0).N * real.range(1).N);
 
+            fft_grid point_res_func{real_fft.range(0), real_fft.range(1)};
+
             auto urange = real_fft.range(0) / 2;
             auto vrange = real_fft.range(1) / 2;
-            for (auto [u, v] : Grid::zip(urange.line(), vrange.line())) {
-                auto w = std::sqrt(1.0 / (wavelength * wavelength) - u * u - v * v);
-                real_fft.at(u, v) *= coef * std::polar(1.0, 2.0 * std::numbers::pi * w * distance);
+            for (auto [u, v] : real_fft.lines()) {
+                auto w_sq = 1.0 / (wavelength * wavelength) - u * u - v * v;
+                if (w_sq > 0.0 * w_sq) {
+                    real_fft.at(u, v) *= coef * std::polar(1.0, 2.0 * std::numbers::pi * std::sqrt(w_sq) * distance);
+                    point_res_func.at(u, v) = coef * std::polar(1.0, 2.0 * std::numbers::pi * std::sqrt(w_sq) * distance);
+                }
             }
         }
 
         // 逆フーリエ変換して逆空間波面を得る
-        Grid::fftshift(real_fft);
         fftw_execute(plan_ifft);
 
         for (auto [x, y, r] : Grid::zip(reciprocal.lines(), reciprocal)) {
@@ -101,7 +103,7 @@ public:
         fftw_destroy_plan(plan_fft);
         fftw_destroy_plan(plan_ifft);
     }
-};
+};  // namespace wavefield
 
 template <class grid_vector, class length_t>
 AngularSpectrumDiffraction(grid_vector&, grid_vector&, length_t) -> AngularSpectrumDiffraction<typename grid_vector::value_t, length_t>;
