@@ -56,7 +56,7 @@ public:
             reinterpret_cast<fftw_complex*>(real_fft.data()), reinterpret_cast<fftw_complex*>(reciprocal_expanded.data()), FFTW_BACKWARD, FFTW_MEASURE);
     }
 
-    void propagate()
+    void propagate(bool forward = true)
     {
         real_expanded.fill(0.0 * *real.begin());
         for (auto [x, y, r] : Grid::zip(real.lines(), real)) {
@@ -71,7 +71,8 @@ public:
         // 畳み込み(フーリエ変換先)
         {
             length_t distance
-                = (real.range(0).max - real.range(0).min)
+                = (forward ? 1.0 : -1.0)
+                  * (real.range(0).max - real.range(0).min)
                   * (reciprocal.range(1).max - reciprocal.range(1).min)
                   / (real.range(0).N * wavelength);
             auto coef = 1.0 / (real.range(0).N * real.range(1).N);
@@ -92,6 +93,11 @@ public:
         for (auto [x, y, r] : Grid::zip(reciprocal.lines(), reciprocal)) {
             r = reciprocal_expanded.at(x, y);
         }
+    }
+
+    void back_propagate()
+    {
+        propagate(false);
     }
 
     ~AngularSpectrumDiffraction()
