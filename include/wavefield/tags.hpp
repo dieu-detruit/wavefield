@@ -20,11 +20,11 @@ struct fresnel_convolution_diffraction_tag : diffraction_tag {
 };
 inline constexpr fresnel_convolution_diffraction_tag fresnel_convolution;
 
-struct fresnel_scaled_fft_diffraction_tag : diffraction_tag {
+struct fresnel_shifted_fft_diffraction_tag : diffraction_tag {
 };
-inline constexpr fresnel_scaled_fft_diffraction_tag fresnel_scaled_fft;
+inline constexpr fresnel_shifted_fft_diffraction_tag fresnel_shifted_fft;
 
-// Rayleigh-Sommerfeld
+// Angular
 struct angular_spectrum_diffraction_tag : diffraction_tag {
 };
 inline constexpr angular_spectrum_diffraction_tag angular;
